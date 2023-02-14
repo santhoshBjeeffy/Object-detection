@@ -1,0 +1,48 @@
+import os
+import json
+from json import load
+import glob
+
+def convert_json_to_yolo(json_file_path, output_dir_path, img_width, img_height):
+    with open(json_file_path, 'r') as f:
+        json_data = load(f)
+    img_file_name = os.path.splitext(os.path.basename(json_data['imagePath']))[0]
+    with open(os.path.join(output_dir_path, img_file_name + '.txt'), 'w') as f:
+        for obj in json_data['shapes']:
+            x, y = obj['points'][0]
+            w = obj['points'][1][0] - x
+            h = obj['points'][1][1] - y
+            x_center = (x + w/2) / img_width
+            y_center = (y + h/2) / img_height
+            w_norm = w / img_width
+            h_norm = h / img_height
+            label = obj['label']
+            if label == 'hole':
+                label = '0'
+            
+            f.write(f"{obj['label']} {x_center:.6f} {y_center:.6f} {w_norm:.6f} {h_norm:.6f}\n")
+            
+# json=r'E:/projects/Ford/annotations/test-annotations/sam_cameraID_4_timestamp_20230213-180548.json'
+# output=r"E:/projects/Ford/annotations/test-annotations-yolo/"
+
+# width=2664
+# height=2304
+
+
+# if __name__ == "__main__":
+    
+#     convert_json_to_yolo(json,output,width,height)
+
+
+# Directory containing JSON files
+json_dir = r'E:/projects/Ford/annotations/test-annotations/'
+# Directory to save YOLO format text files
+output_dir = r"E:/projects/Ford/annotations/test-annotations-yolo/"
+# Image width and height
+img_width = 2664
+img_height = 2304
+
+# Iterate over all JSON files in the directory
+for json_file_path in glob.glob(os.path.join(json_dir, '*.json')):
+    # Convert the JSON file to YOLO format and save the text file
+    convert_json_to_yolo(json_file_path, output_dir, img_width, img_height)
