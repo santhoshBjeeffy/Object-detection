@@ -1,0 +1,20 @@
+1. YOLO v5 training on custom data : https://blog.paperspace.com/train-yolov5-custom-data/
+
+2. GRADCAM Yolo : https://colab.research.google.com/github/pooya-mohammadi/yolov5-gradcam/blob/master/main.ipynb
+https://github.com/pooya-mohammadi/yolov5-gradcam
+
+3. Data augmentation in yolov5 and other parameters explained by ultralytics: https://docs.ultralytics.com/tutorials/architecture-summary/ https://iq.opengenus.org/yolov5/
+
+4. Perceptron : https://towardsdatascience.com/what-the-hell-is-perceptron-626217814f53
+
+5. Activation Functions :  https://www.analyticsvidhya.com/blog/2020/01/fundamentals-deep-learning-activation-functions-when-to-use-them/
+
+6. Optimizers : https://www.analyticsvidhya.com/blog/2021/10/a-comprehensive-guide-on-deep-learning-optimizers/
+
+7. Convolution models : https://www.analyticsvidhya.com/blog/2018/12/guide-convolutional-neural-network-cnn/#h2_10   (lenet,Alexnet,VGG,Resnet,mobilenet)
+
+8. Separable Convolutions : https://towardsdatascience.com/a-basic-introduction-to-separable-convolutions-b99ec3102728 
+
+9.Mobilenet Deptwise Separable Convolutions : https://medium.com/@fransiska26/the-differences-between-inception-resnet-and-mobilenet-e97736a709b0
+
+10.
