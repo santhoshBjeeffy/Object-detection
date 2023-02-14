@@ -1,0 +1,27 @@
+import cv2
+import xml.etree.ElementTree as ET
+
+# Load image and annotation file
+# Load image and annotation file
+image = cv2.imread('E:/shift-purging/data-validation/img/cameraID_3_snapshotID_2_timestamp_20211117-165529.png')
+annotation_file = open('E:/shift-purging/data-validation/annotation/cameraID_3_snapshotID_2_timestamp_20211117-165529.xml', 'r')
+
+
+# Parse the XML file
+tree = ET.parse(annotation_file)
+root = tree.getroot()
+
+# Loop through each object in the XML file
+for obj in root.iter('object'):
+    class_name = obj.find('name').text
+    bbox = obj.find('bndbox')
+    x_min = int(bbox.find('xmin').text)
+    y_min = int(bbox.find('ymin').text)
+    x_max = int(bbox.find('xmax').text)
+    y_max = int(bbox.find('ymax').text)
+
+    # Draw bounding box on the image
+    cv2.rectangle(image, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
+    cv2.putText(image, class_name, (x_min, y_min - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12), 2)
+
+cv2.imwrite('E:/shift-purging/data-validation/annotated.png',image)
