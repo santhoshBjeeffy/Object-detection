@@ -1,0 +1,88 @@
+### Using Yolov5 model ..
+
+import cv2
+import numpy as np
+import os
+import torch
+#from yolov5 import detect
+
+# Load pre-trained YOLOv5 model
+
+#model = torch.hub.load('ultralytics/yolov5', 'yolov5s') # for pre-trained model
+
+weights_path='E:/Ford-deployment/hole-model/Yolo-final-test-complete-data/weights/best.pt'  # path of the file
+
+yolo_repo='E:/projects/Ford/yolov5/'  # official Repo path
+
+model = torch.hub.load(yolo_repo,'custom',weights_path, source='local') 
+
+#model.eval()
+
+# Define classes for object detection
+classes = model.module.names if hasattr(model, 'module') else model.names
+
+print(classes)
+
+# Set YOLOv5 parameters
+conf_threshold = 0.4
+iou_threshold = 0.45
+
+# Define function to apply YOLOv5 object detection on an image
+def detect_objects(image):
+    # Apply object detection using YOLOv5 model
+    results = model(image)
+
+    # Filter out weak predictions and apply non-max suppression
+    object_coords = []
+    scores = []
+    for result in results.xyxy[0]:
+        if result[4] > conf_threshold:
+            object_coords.append([result[0], result[1], result[2]-result[0], result[3]-result[1]])
+            scores.append(result[4])
+    object_coords = np.array(object_coords)
+    scores = np.array(scores)
+
+    indices = cv2.dnn.NMSBoxes(object_coords, scores, conf_threshold, iou_threshold)
+
+    # Extract the object coordinates and class labels
+    object_coords = [object_coords[i] for i in indices]
+    print('object_coords')
+    print('##########')
+    object_labels = [classes[int(results.xyxy[0][i, 5])] for i in indices]
+    print(object_labels)
+
+    return object_coords, object_labels
+
+classes = list(model.module.names if hasattr(model, 'module') else model.names)
+
+# Define function to convert YOLOv5 annotations to YOLO format
+def yolo_format(image_file, object_coords, object_labels, output_dir):
+    image_name, image_ext = os.path.splitext(image_file)
+    output_file = os.path.join(output_dir, image_name + ".txt")
+    with open(output_file, "w") as f:
+        for i in range(len(object_coords)):
+            x, y, w, h = object_coords[i]
+            label = object_labels[i]
+            class_id = classes.index(label)
+            x_center = (x + w/2) / image_width
+            y_center = (y + h/2) / image_height
+            width = w / image_width
+            height = h / image_height
+            f.write(f"{class_id} {x_center} {y_center} {width} {height}\n")
+
+# Process new images
+
+img_path='E:/Ford-deployment/hole-model/auto-annotate/test_annotate/'
+
+output_dir='E:/Ford-deployment/hole-model/auto-annotate/test_annotate/'
+
+
+for image_file in os.listdir(img_path):
+    image_path = os.path.join(img_path, image_file)
+    image = cv2.imread(image_path)
+    if image is None:
+        print(f"Error: could not read image file {image_file}")
+        continue
+    image_height, image_width, _ = image.shape
+    object_coords, object_labels = detect_objects(image)
+    yolo_format(image_file, object_coords, object_labels, output_dir)
